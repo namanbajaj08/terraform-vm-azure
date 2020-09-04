@@ -154,7 +154,7 @@ resource "azurerm_availability_set" "vm" {
 
 resource "azurerm_public_ip" "vm" {
   count               = var.nb_public_ip
-  name                = "${var.vm_hostname}-pip-${count.index+1}"
+  name                = "${var.vm_hostname}-pip-${count.index}"
   resource_group_name = data.azurerm_resource_group.vm.name
   location            = coalesce(var.location, data.azurerm_resource_group.vm.location)
   allocation_method   = var.allocation_method
@@ -188,16 +188,16 @@ resource "azurerm_network_security_rule" "vm" {
 
 resource "azurerm_network_interface" "vm" {
   count                         = var.nb_instances
-  name                          = "${var.vm_hostname}-nic-${count.index+1}"
+  name                          = "${var.vm_hostname}-nic-${count.index}"
   resource_group_name           = data.azurerm_resource_group.vm.name
   location                      = coalesce(var.location, data.azurerm_resource_group.vm.location)
   enable_accelerated_networking = var.enable_accelerated_networking
 
   ip_configuration {
-    name                          = "${var.vm_hostname}-ip-${count.index+1}"
+    name                          = "${var.vm_hostname}-ip-${count.index}"
     subnet_id                     = var.vnet_subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = length(azurerm_public_ip.vm.*.id) > 0 ? element(concat(azurerm_public_ip.vm.*.id, list("")), count.index+1) : ""
+    public_ip_address_id          = length(azurerm_public_ip.vm.*.id) > 0 ? element(concat(azurerm_public_ip.vm.*.id, list("")), count.index) : ""
   }
 
   tags = var.tags
@@ -205,6 +205,6 @@ resource "azurerm_network_interface" "vm" {
 
 resource "azurerm_network_interface_security_group_association" "test" {
   count                     = var.nb_instances
-  network_interface_id      = azurerm_network_interface.vm[count.index+1].id
+  network_interface_id      = azurerm_network_interface.vm[count.index].id
   network_security_group_id = azurerm_network_security_group.vm.id
 }
