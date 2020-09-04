@@ -17,7 +17,7 @@ resource "random_id" "vm-sa" {
 
 resource "azurerm_storage_account" "vm-sa" {
   count                    = var.boot_diagnostics ? 1 : 0
-  name                     = "${lower(var.resource_group_name)}-${lower(random_id.vm-sa.hex)}"
+  name                     = "${lower(var.resource_group_name)}${lower(random_id.vm-sa.hex)}"
   resource_group_name      = data.azurerm_resource_group.vm.name
   location                 = coalesce(var.location, data.azurerm_resource_group.vm.location)
   account_tier             = element(split("_", var.boot_diagnostics_sa_type), 0)
